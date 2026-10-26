@@ -4,46 +4,55 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: en kolumn med rubrikrad, flikar och en arbetsyta; veckan som 7 kolumner på bred skärm, en dag i taget på mobil. */
+/* Layout: mobil först. På telefon: kompakt rubrik, innehåll, flikrad längst ner och formulär i ett ark som glider upp.
+   På dator: flikar överst, formulär direkt på sidan och veckan som 7 kolumner. */
 :root {
-  --bg: #EEF2EF;
-  --surface: #FBFCFB;
-  --ink: #15201B;
-  --muted: #56675E;
-  --line: #D3DCD6;
-  --accent: #23664A;
+  --bg: #EDF1EE;
+  --surface: #FFFFFF;
+  --ink: #111A16;
+  --muted: #475750;
+  --line: #C9D3CD;
+  --accent: #1F6344;
   --accent-ink: #FFFFFF;
-  --pause: #9A6B00;
-  --warn: #B0500F;
-  --danger: #B32929;
+  --pause: #8C6100;
+  --warn: #A84A0C;
+  --danger: #B02626;
+  --scrim: rgba(10, 20, 15, 0.45);
+  --shadow: 0 10px 30px rgba(15, 35, 25, 0.16);
   --font-display: "Familjen Grotesk", "Helvetica Neue", Arial, sans-serif;
   --font-body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
-  --s1: #3B74C9; --s2: #C4501A; --s3: #7B57D6; --s4: #138A5E; --s5: #C93A74; --s6: #A07A00;
+  --s1: #3468BC; --s2: #BB4A16; --s3: #7050CC; --s4: #11805A; --s5: #BE336B; --s6: #8F6D00;
+  --nav-h: 64px;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --bg: #0F1613; --surface: #16201B; --ink: #E2EBE5; --muted: #93A69B; --line: #29372F;
-    --accent: #5CBB8C; --accent-ink: #0B1711; --pause: #E2B44A; --warn: #EE9A58; --danger: #F27D7D;
-    --s1: #78A7EE; --s2: #F08A55; --s3: #A98CF2; --s4: #4DC795; --s5: #EE79A6; --s6: #D9B13C;
+    --bg: #0E1512; --surface: #18231E; --ink: #EEF4F0; --muted: #A7B8AE; --line: #2E3D35;
+    --accent: #62C493; --accent-ink: #08140E; --pause: #E8BC55; --warn: #F2A266; --danger: #F58585;
+    --scrim: rgba(0, 0, 0, 0.6); --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    --s1: #7FADF2; --s2: #F39260; --s3: #AF94F4; --s4: #55CD9B; --s5: #F282AD; --s6: #DDB646;
   }
 }
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #0F1613; --surface: #16201B; --ink: #E2EBE5; --muted: #93A69B; --line: #29372F;
-  --accent: #5CBB8C; --accent-ink: #0B1711; --pause: #E2B44A; --warn: #EE9A58; --danger: #F27D7D;
-  --s1: #78A7EE; --s2: #F08A55; --s3: #A98CF2; --s4: #4DC795; --s5: #EE79A6; --s6: #D9B13C;
+  --bg: #0E1512; --surface: #18231E; --ink: #EEF4F0; --muted: #A7B8AE; --line: #2E3D35;
+  --accent: #62C493; --accent-ink: #08140E; --pause: #E8BC55; --warn: #F2A266; --danger: #F58585;
+  --scrim: rgba(0, 0, 0, 0.6); --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  --s1: #7FADF2; --s2: #F39260; --s3: #AF94F4; --s4: #55CD9B; --s5: #F282AD; --s6: #DDB646;
 }
 
 * { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
 body {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-body);
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.5;
+  -webkit-tap-highlight-color: transparent;
 }
+body.noscroll { overflow: hidden; }
 .wrap {
   max-width: 1180px;
   margin: 0 auto;
@@ -55,241 +64,310 @@ body {
   gap: 22px;
 }
 button, input, select { font: inherit; color: inherit; }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button { touch-action: manipulation; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
-/* Rubrik */
-header.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 8px 24px; }
+/* ---------- Rubrik ---------- */
+header.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 6px 24px; }
 h1 {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: clamp(34px, 6vw, 52px);
-  line-height: 1;
-  letter-spacing: -0.02em;
-  margin: 0;
-  text-wrap: balance;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(30px, 6vw, 52px); line-height: 1; letter-spacing: -0.02em;
+  margin: 0; text-wrap: balance;
 }
-.today {
-  font-family: var(--font-mono);
-  font-size: 13px;
-  color: var(--muted);
-  display: flex; gap: 14px; flex-wrap: wrap;
-  font-variant-numeric: tabular-nums;
-}
+.today { font-family: var(--font-mono); font-size: 14px; color: var(--muted); display: flex; gap: 12px; flex-wrap: wrap; font-variant-numeric: tabular-nums; }
 .today b { color: var(--ink); font-weight: 500; }
 
-/* Flikar */
+/* ---------- Flikar (överst på dator, flikrad längst ner på mobil) ---------- */
 .tabs {
-  display: flex; gap: 4px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 4px;
-  align-self: flex-start;
-  max-width: 100%;
-  overflow-x: auto;
+  display: flex; gap: 4px; align-self: flex-start;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 4px;
 }
 .tab {
-  border: 0; background: transparent; cursor: pointer;
+  border: 0; background: transparent; cursor: pointer; position: relative;
   padding: 8px 16px; border-radius: 8px;
-  font-family: var(--font-display); font-weight: 600; font-size: 15px;
+  font-family: var(--font-display); font-weight: 600; font-size: 16px;
   color: var(--muted); white-space: nowrap;
   display: flex; align-items: center; gap: 8px;
 }
+.tab svg { width: 20px; height: 20px; flex: none; }
 .tab:hover { color: var(--ink); }
 .tab[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); }
 .count {
-  font-family: var(--font-mono); font-size: 11px; font-weight: 500;
-  min-width: 20px; padding: 1px 6px; border-radius: 99px;
-  background: color-mix(in srgb, currentColor 16%, transparent);
-  text-align: center;
+  font-family: var(--font-mono); font-size: 12px; font-weight: 500;
+  min-width: 20px; padding: 1px 6px; border-radius: 99px; text-align: center;
+  background: color-mix(in srgb, currentColor 18%, transparent);
 }
+.count:empty { display: none; }
 
-/* Banner */
+/* ---------- Exempel-banner ---------- */
 .banner {
   display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px;
-  padding: 12px 16px; border-radius: 10px;
+  padding: 12px 16px; border-radius: 12px;
   background: color-mix(in srgb, var(--pause) 13%, var(--surface));
-  border: 1px solid color-mix(in srgb, var(--pause) 35%, var(--line));
+  border: 1px solid color-mix(in srgb, var(--pause) 40%, var(--line));
 }
-.banner p { margin: 0; flex: 1 1 260px; }
+.banner p { margin: 0; flex: 1 1 240px; }
 .banner .btns { display: flex; gap: 8px; flex-wrap: wrap; }
 
-/* Formulär */
+/* ---------- Formulär ---------- */
 .panel { display: flex; flex-direction: column; gap: 18px; }
 form.add {
   display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 12px;
-  padding: 14px; border-radius: 12px;
+  padding: 14px; border-radius: 14px;
   background: var(--surface); border: 1px solid var(--line);
 }
-.field { display: flex; flex-direction: column; gap: 4px; flex: 1 1 130px; min-width: 0; }
+.sheet-head { display: none; }
+.field { display: flex; flex-direction: column; gap: 5px; flex: 1 1 130px; min-width: 0; }
 .field.wide { flex: 3 1 220px; }
 .field.narrow { flex: 0 1 110px; }
-label.lbl {
-  font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
-  color: var(--muted); font-weight: 700;
-}
+label.lbl { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 700; }
 input[type="text"], input[type="time"], input[type="date"], input[type="number"], select {
-  width: 100%;
-  padding: 8px 10px; border-radius: 8px;
-  border: 1px solid var(--line); background: var(--bg);
-  min-height: 40px;
+  width: 100%; min-width: 0; display: block;
+  padding: 9px 11px; border-radius: 10px;
+  border: 1.5px solid var(--line); background: var(--bg);
+  min-height: 44px; font-size: 16px;
 }
+input:focus, select:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
 .btn {
-  border: 1px solid var(--line); background: var(--surface);
-  padding: 8px 14px; border-radius: 8px; cursor: pointer;
-  min-height: 40px; font-weight: 700;
+  border: 1.5px solid var(--line); background: var(--surface);
+  padding: 8px 16px; border-radius: 10px; cursor: pointer;
+  min-height: 44px; font-weight: 700;
 }
 .btn:hover { border-color: var(--muted); }
+.btn:active { transform: scale(0.98); }
 .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
-.btn.primary:hover { filter: brightness(1.08); }
-.btn.small { min-height: 32px; padding: 4px 12px; font-size: 14px; }
-.err { color: var(--danger); font-size: 14px; flex-basis: 100%; margin: 0; }
-
-/* Veckan */
-.daypick { display: none; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
-.daypick button {
-  flex: 1 0 auto; border: 1px solid var(--line); background: var(--surface);
-  border-radius: 8px; padding: 6px 10px; cursor: pointer;
-  font-family: var(--font-display); font-weight: 600;
-  display: flex; flex-direction: column; align-items: center; line-height: 1.2;
+.btn.small { min-height: 36px; padding: 4px 12px; font-size: 15px; }
+.err { color: var(--danger); font-size: 15px; font-weight: 700; flex-basis: 100%; margin: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; flex-basis: 100%; }
+.chips button {
+  border: 1.5px solid var(--line); background: var(--bg); border-radius: 99px;
+  padding: 6px 12px; min-height: 36px; cursor: pointer; font-size: 15px;
+  display: flex; align-items: center; gap: 6px;
 }
-.daypick button small { font-family: var(--font-mono); font-size: 11px; color: var(--muted); font-weight: 400; }
-.daypick button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
-.daypick button[aria-pressed="true"] small { color: inherit; }
+.chips button[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, var(--surface)); font-weight: 700; }
+
+/* ---------- Veckan ---------- */
+.daypick { display: none; }
 .week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
 .day { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-.dayhead {
-  display: flex; align-items: baseline; justify-content: space-between; gap: 6px;
-  padding: 6px 4px 8px; border-bottom: 2px solid var(--line);
-}
-.dayhead strong { font-family: var(--font-display); font-size: 16px; font-weight: 700; }
+.dayhead { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; padding: 6px 4px 8px; border-bottom: 2px solid var(--line); }
+.dayhead strong { font-family: var(--font-display); font-size: 17px; font-weight: 700; }
 .dayhead span { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+.dayfull { display: none; }
 .day.is-today .dayhead { border-bottom-color: var(--accent); }
 .day.is-today .dayhead strong { color: var(--accent); }
-.day.is-weekend .dayhead strong { color: var(--muted); }
 .slot {
-  position: relative;
-  padding: 8px 30px 9px 10px; border-radius: 8px;
-  background: color-mix(in srgb, var(--c) 14%, var(--surface));
-  border: 1px solid color-mix(in srgb, var(--c) 30%, transparent);
+  position: relative; display: block;
+  padding: 8px 30px 9px 10px; border-radius: 10px;
+  background: color-mix(in srgb, var(--c) 13%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--c) 35%, transparent);
   min-width: 0;
 }
-.slot .time { font-family: var(--font-mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
-.slot .subj { font-weight: 700; line-height: 1.25; overflow-wrap: anywhere; display: flex; align-items: center; gap: 6px; }
-.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--c); flex: none; }
+.slot.past { opacity: 0.6; }
+.slot-time { font-family: var(--font-mono); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; display: flex; gap: 4px; }
+.slot-time b { font-weight: 500; color: var(--ink); }
+.slot-time span::before { content: "–"; margin-right: 4px; }
+.subj { font-weight: 700; line-height: 1.25; overflow-wrap: anywhere; display: flex; align-items: center; gap: 7px; }
+.dur { font-size: 13px; color: var(--muted); display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.now { font-family: var(--font-mono); font-size: 11px; font-weight: 500; padding: 1px 7px; border-radius: 99px; background: var(--accent); color: var(--accent-ink); }
+.dot { width: 10px; height: 10px; border-radius: 50%; background: var(--c); flex: none; }
 .x {
   position: absolute; top: 4px; right: 4px;
-  width: 24px; height: 24px; border-radius: 6px; border: 0;
-  background: transparent; color: var(--muted); cursor: pointer; font-size: 17px; line-height: 1;
+  width: 26px; height: 26px; border-radius: 8px; border: 0;
+  background: transparent; color: var(--muted); cursor: pointer; font-size: 18px; line-height: 1;
+  display: grid; place-items: center;
 }
 .x:hover { background: color-mix(in srgb, var(--danger) 14%, transparent); color: var(--danger); }
-.none { color: var(--muted); font-size: 13px; padding: 6px 4px; font-style: italic; }
-.daytotal { font-family: var(--font-mono); font-size: 11px; color: var(--muted); padding: 0 4px; }
+.none { color: var(--muted); font-size: 14px; padding: 6px 4px; font-style: italic; }
+.none .btn { display: none; }
+.daytotal { font-family: var(--font-mono); font-size: 12px; color: var(--muted); padding: 0 4px; }
 
-/* Prov och läxor */
-.tasks { display: flex; flex-direction: column; gap: 6px; }
-.group-title {
-  font-family: var(--font-display); font-weight: 600; font-size: 13px;
-  text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted);
-  margin: 10px 0 2px;
-}
+/* ---------- Prov och läxor ---------- */
+.tasks { display: flex; flex-direction: column; gap: 8px; }
+.group-title { font-family: var(--font-display); font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 12px 0 2px; }
 .task {
-  display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: 4px 12px;
-  padding: 10px 12px; border-radius: 10px;
+  position: relative;
+  display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto; align-items: center; gap: 12px;
+  padding: 12px 14px; border-radius: 14px;
   background: var(--surface); border: 1px solid var(--line);
 }
-.task input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); margin: 0; cursor: pointer; }
-.task .t-title { font-weight: 700; overflow-wrap: anywhere; }
-.task .t-meta { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-.task .t-when { text-align: right; font-family: var(--font-mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.task .x { position: static; }
-.chip {
-  display: inline-block; font-family: var(--font-mono); font-size: 11px; font-weight: 500;
-  padding: 2px 8px; border-radius: 99px; white-space: nowrap;
-  background: color-mix(in srgb, var(--k, var(--muted)) 15%, transparent);
-  color: var(--k, var(--muted));
+.check {
+  width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--muted);
+  background: transparent; cursor: pointer; display: grid; place-items: center; padding: 0; flex: none;
 }
-.chip.type { --k: var(--ink); background: transparent; border: 1px solid var(--line); color: var(--muted); }
+.check svg { width: 16px; height: 16px; opacity: 0; }
+.task.done .check { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.task.done .check svg { opacity: 1; }
+.datebox {
+  width: 50px; text-align: center; border-radius: 10px; padding: 4px 0 5px;
+  background: var(--bg); border: 1px solid var(--line); line-height: 1.1;
+}
+.datebox b { display: block; font-family: var(--font-display); font-size: 22px; font-weight: 700; }
+.datebox span { font-family: var(--font-mono); font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.task.prov:not(.done) .datebox { border-color: color-mix(in srgb, var(--warn) 55%, var(--line)); }
+.t-title { font-weight: 700; font-size: 17px; line-height: 1.3; overflow-wrap: anywhere; }
+.t-meta { font-size: 14px; color: var(--muted); display: flex; align-items: center; gap: 6px 8px; flex-wrap: wrap; margin-top: 3px; }
+.t-meta .sub { display: inline-flex; align-items: center; gap: 6px; }
+.task .x { position: static; width: 36px; height: 36px; }
+.chip {
+  display: inline-block; font-family: var(--font-mono); font-size: 12px; font-weight: 500;
+  padding: 2px 8px; border-radius: 99px; white-space: nowrap;
+  background: color-mix(in srgb, var(--k, var(--muted)) 15%, transparent); color: var(--k, var(--muted));
+}
+.chip.type { background: transparent; border: 1px solid var(--line); color: var(--muted); }
 .chip.soon { --k: var(--warn); }
 .chip.late { --k: var(--danger); }
 .chip.ok { --k: var(--accent); }
-.task.done .t-title { text-decoration: line-through; color: var(--muted); font-weight: 400; }
 .task.done { background: transparent; }
-.task.prov:not(.done) { border-color: color-mix(in srgb, var(--warn) 40%, var(--line)); }
-.empty {
-  padding: 28px 16px; text-align: center; color: var(--muted);
-  border: 1px dashed var(--line); border-radius: 12px;
-}
+.task.done .t-title { text-decoration: line-through; color: var(--muted); font-weight: 400; }
+.task.done .datebox { opacity: 0.55; }
+.empty { padding: 28px 16px; text-align: center; color: var(--muted); border: 1.5px dashed var(--line); border-radius: 14px; }
 
-/* Timer */
+/* ---------- Timer ---------- */
 .timer {
   display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 28px; align-items: center;
-  padding: 24px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line);
+  padding: 24px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line);
 }
 .ringbox { position: relative; width: 100%; max-width: 340px; aspect-ratio: 1; margin: 0 auto; }
 .ringbox svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-.ringbox circle { fill: none; stroke-width: 10; }
+.ringbox circle { fill: none; stroke-width: 9; }
 .ringbox .track { stroke: var(--line); }
 .ringbox .prog { stroke: var(--mode); stroke-linecap: round; transition: stroke-dashoffset 0.3s linear; }
-.ringtxt {
-  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
-}
-.mode-lbl {
-  font-family: var(--font-display); font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em;
-  color: var(--mode);
-}
-.clock { font-family: var(--font-mono); font-weight: 500; font-size: clamp(48px, 12vw, 72px); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; line-height: 1; }
-.ringtxt small { color: var(--muted); font-size: 13px; max-width: 80%; text-align: center; overflow-wrap: anywhere; }
+.ringtxt { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+.mode-lbl { font-family: var(--font-display); font-weight: 700; font-size: 15px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--mode); }
+.clock { font-family: var(--font-mono); font-weight: 500; font-size: clamp(56px, 16vw, 76px); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; line-height: 1; }
+.ringtxt small { color: var(--muted); font-size: 14px; max-width: 75%; text-align: center; overflow-wrap: anywhere; }
 .tside { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
-.tbtns { display: flex; gap: 8px; flex-wrap: wrap; }
-.tbtns .btn { min-width: 110px; }
-.tsettings { display: flex; flex-wrap: wrap; gap: 12px; }
+.tbtns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; max-width: 420px; }
+.tbtns .btn { min-height: 48px; }
+.tbtns .btn.primary { grid-column: 1 / -1; min-height: 58px; font-size: 19px; border-radius: 14px; }
+.tsettings { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; max-width: 420px; }
+.tsettings .full { grid-column: 1 / -1; }
 .tally { display: flex; flex-direction: column; gap: 6px; }
-.tally .pips { display: flex; flex-wrap: wrap; gap: 5px; min-height: 14px; }
-.pip { width: 14px; height: 14px; border-radius: 4px; background: var(--accent); }
-.tally p { margin: 0; color: var(--muted); font-size: 14px; }
+.pips { display: flex; flex-wrap: wrap; gap: 5px; min-height: 14px; }
+.pip { width: 16px; height: 16px; border-radius: 5px; background: var(--accent); }
+.tally p { margin: 0; color: var(--muted); font-size: 15px; }
 .tally strong { color: var(--ink); }
-.ding {
-  padding: 12px 16px; border-radius: 10px; font-weight: 700;
-  background: color-mix(in srgb, var(--mode) 16%, var(--surface));
-  border: 1px solid var(--mode);
-}
-.saveinfo { font-size: 12px; color: var(--muted); font-family: var(--font-mono); }
+.ding { padding: 12px 16px; border-radius: 12px; font-weight: 700; background: color-mix(in srgb, var(--mode) 16%, var(--surface)); border: 1.5px solid var(--mode); }
+.saveinfo { font-size: 13px; color: var(--muted); font-family: var(--font-mono); }
 
+.fab, .scrim { display: none; }
+
+/* =================== MOBIL =================== */
 @media (max-width: 760px) {
-  .wrap { padding-block: 18px 40px; gap: 16px; }
-  .tabs { align-self: stretch; }
-  .tab { flex: 1 1 auto; justify-content: center; padding: 10px 8px; }
+  body { font-size: 17px; }
+  .wrap { padding-block: 16px calc(var(--nav-h) + 96px + env(safe-area-inset-bottom, 0px)); gap: 16px; }
+  header.top { align-items: baseline; }
+  h1 { font-size: 30px; }
+  .today { font-size: 13px; }
 
-  /* Formulär: två kolumner, breda fält och knappen över hela raden */
-  form.add, .tsettings { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
-  form.add .field.wide, form.add .field.full, form.add .btn, form.add .err, .tsettings .field.full { grid-column: 1 / -1; }
-  form.add .btn { min-height: 46px; }
-  /* 16px hindrar iPhone från att zooma in när man trycker i ett fält */
-  input[type="text"], input[type="time"], input[type="date"], input[type="number"], select { font-size: 16px; min-height: 44px; }
-  input[type="date"], input[type="time"] { display: block; min-width: 0; -webkit-appearance: none; appearance: none; }
+  /* Flikrad längst ner, som i en app */
+  .tabs {
+    position: fixed; z-index: 30; left: 0; right: 0; bottom: 0;
+    border-radius: 0; border: 0; border-top: 1px solid var(--line);
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    -webkit-backdrop-filter: saturate(1.4) blur(14px); backdrop-filter: saturate(1.4) blur(14px);
+    padding: 6px max(8px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px));
+    gap: 0;
+  }
+  .tab {
+    flex: 1 1 0; flex-direction: column; gap: 3px; justify-content: center;
+    min-height: var(--nav-h); padding: 6px 4px; font-size: 12px; border-radius: 12px;
+  }
+  .tab svg { width: 26px; height: 26px; }
+  .tab[aria-selected="true"] { background: transparent; color: var(--accent); }
+  .tab[aria-selected="true"] svg { background: color-mix(in srgb, var(--accent) 16%, transparent); border-radius: 99px; padding: 2px 14px; width: 56px; height: 30px; }
+  .tab .count { position: absolute; top: 4px; left: calc(50% + 10px); background: var(--danger); color: #fff; font-size: 11px; min-width: 19px; padding: 1px 5px; }
 
-  .daypick { display: flex; }
-  .daypick button { min-height: 48px; }
-  .week { grid-template-columns: minmax(0, 1fr); }
-  .week .day:not(.is-picked) { display: none; }
-  .slot { padding: 10px 44px 11px 12px; }
-  .x { width: 36px; height: 36px; font-size: 20px; }
+  /* Knapp för att lägga till, ovanför flikraden */
+  .fab {
+    display: flex; align-items: center; gap: 8px;
+    position: fixed; z-index: 31;
+    right: max(16px, calc(env(safe-area-inset-right, 0px) + 12px));
+    bottom: calc(var(--nav-h) + 26px + env(safe-area-inset-bottom, 0px));
+    min-height: 56px; padding: 0 22px 0 18px; border-radius: 18px; border: 0;
+    background: var(--accent); color: var(--accent-ink);
+    font-family: var(--font-display); font-weight: 700; font-size: 17px;
+    box-shadow: var(--shadow); cursor: pointer;
+  }
+  .fab svg { width: 22px; height: 22px; }
+  .fab:active { transform: scale(0.96); }
 
-  .task { grid-template-columns: auto minmax(0, 1fr) auto; padding: 12px; }
-  .task .t-when { grid-column: 2 / 3; text-align: left; }
-  .task .t-when br { display: none; }
-  .task .t-when .chip { margin-left: 6px; }
-  .task .x { grid-row: 1; grid-column: 3; }
+  /* Formulär blir ett ark som glider upp underifrån */
+  .scrim {
+    display: block; position: fixed; inset: 0; z-index: 40; background: var(--scrim);
+    opacity: 0; visibility: hidden; transition: opacity 0.2s, visibility 0s 0.2s;
+  }
+  .scrim.open { opacity: 1; visibility: visible; transition: opacity 0.2s; }
+  form.add {
+    position: fixed; z-index: 41; left: 0; right: 0; bottom: 0;
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px 10px;
+    max-height: 88%; overflow-y: auto; overscroll-behavior: contain;
+    border-radius: 22px 22px 0 0; border: 0; box-shadow: var(--shadow);
+    padding: 8px max(18px, env(safe-area-inset-right, 0px)) calc(18px + env(safe-area-inset-bottom, 0px)) max(18px, env(safe-area-inset-left, 0px));
+    transform: translateY(105%); visibility: hidden;
+    transition: transform 0.28s cubic-bezier(.2,.8,.2,1), visibility 0s 0.28s;
+  }
+  form.add.open { transform: none; visibility: visible; transition: transform 0.28s cubic-bezier(.2,.8,.2,1); }
+  form.add > * { grid-column: 1 / -1; }
+  form.add > .field.narrow { grid-column: auto; }
+  .sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 18px; position: relative; }
+  .sheet-head::before { content: ""; position: absolute; top: 2px; left: 50%; width: 40px; height: 5px; margin-left: -20px; border-radius: 99px; background: var(--line); }
+  .sheet-head h2 { margin: 0; font-family: var(--font-display); font-size: 22px; font-weight: 700; }
+  .sheet-head .x { position: static; width: 40px; height: 40px; background: var(--bg); border-radius: 99px; font-size: 22px; }
+  form.add .btn.primary { min-height: 54px; font-size: 18px; border-radius: 14px; }
+  input[type="text"], input[type="time"], input[type="date"], input[type="number"], select { min-height: 50px; font-size: 17px; -webkit-appearance: none; appearance: none; }
+  select { background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%); background-position: calc(100% - 20px) 50%, calc(100% - 14px) 50%; background-size: 6px 6px; background-repeat: no-repeat; padding-right: 34px; }
 
-  .timer { grid-template-columns: minmax(0, 1fr); padding: 18px; gap: 20px; }
-  .ringbox { max-width: 280px; }
-  .tbtns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  .tbtns .btn { min-width: 0; min-height: 46px; }
-  .tbtns .btn.primary { grid-column: 1 / -1; }
+  /* Veckan: dagremsa + en dag i taget */
+  .daypick { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+  .daypick button {
+    border: 0; background: transparent; border-radius: 14px; padding: 8px 0 7px; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 2px; line-height: 1.1;
+  }
+  .daypick .dn { font-size: 12px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+  .daypick .dd { font-family: var(--font-display); font-size: 21px; font-weight: 700; width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; }
+  .daypick .dots { display: flex; gap: 3px; height: 6px; }
+  .daypick .dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--c); }
+  .daypick .is-today .dd { color: var(--accent); }
+  .daypick button[aria-pressed="true"] .dd { background: var(--ink); color: var(--bg); }
+  .daypick button[aria-pressed="true"] .dn { color: var(--ink); }
+
+  .week { display: block; touch-action: pan-y; }
+  .week .day { display: none; gap: 10px; }
+  .week .day.is-picked { display: flex; }
+  .dayhead { display: none; }
+  .dayfull { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 2px 2px 4px; }
+  .dayfull h2 { margin: 0; font-family: var(--font-display); font-size: 24px; font-weight: 700; }
+  .dayfull span { font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+  .slot {
+    display: grid; grid-template-columns: 62px minmax(0, 1fr) auto; align-items: center; gap: 12px;
+    padding: 14px 8px 14px 14px; border-radius: 16px;
+  }
+  .slot-time { flex-direction: column; gap: 0; font-size: 14px; }
+  .slot-time b { font-size: 18px; }
+  .slot-time span::before { content: none; }
+  .subj { font-size: 18px; }
+  .dur { font-size: 14px; margin-top: 2px; }
+  .slot .x { position: static; width: 40px; height: 40px; }
+  .daytotal { display: none; }
+  .none {
+    display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center;
+    padding: 32px 16px; border: 1.5px dashed var(--line); border-radius: 16px; font-style: normal; font-size: 16px;
+  }
+  .none .btn { display: inline-flex; align-items: center; }
+
+  /* Prov och läxor */
+  .task { grid-template-columns: auto auto minmax(0, 1fr) auto; gap: 10px; padding: 12px 6px 12px 12px; }
+  .task .x { width: 40px; height: 40px; }
+
+  /* Timer */
+  .timer { grid-template-columns: minmax(0, 1fr); padding: 20px 16px; gap: 20px; border-radius: 22px; }
+  .ringbox { max-width: 300px; }
+  .tbtns, .tsettings { max-width: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ringbox .prog { transition: none; }
+  .ringbox .prog, form.add, .scrim { transition: none !important; }
 }
 </style>
 
@@ -308,18 +386,29 @@ input[type="text"], input[type="time"], input[type="date"], input[type="number"]
   </div>
 
   <nav class="tabs" role="tablist" aria-label="Delar av schemat">
-    <button class="tab" role="tab" id="tab-week" data-tab="week" aria-selected="true">Veckan</button>
-    <button class="tab" role="tab" id="tab-tasks" data-tab="tasks" aria-selected="false">Prov &amp; läxor <span class="count" id="taskcount">0</span></button>
-    <button class="tab" role="tab" id="tab-timer" data-tab="timer" aria-selected="false">Timer</button>
+    <button class="tab" role="tab" id="tab-week" data-tab="week" aria-selected="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="3"></rect><path d="M3.5 10h17M8 3v4M16 3v4"></path></svg>
+      <span>Veckan</span>
+    </button>
+    <button class="tab" role="tab" id="tab-tasks" data-tab="tasks" aria-selected="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"></path><path d="M3.5 6l1.5 1.5L7 5M3.5 12l1.5 1.5L7 11"></path><circle cx="5" cy="18" r="1.3"></circle></svg>
+      <span>Prov &amp; läxor</span><span class="count" id="taskcount"></span>
+    </button>
+    <button class="tab" role="tab" id="tab-timer" data-tab="timer" aria-selected="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13.5" r="7.5"></circle><path d="M12 9.5v4l2.5 2M9.5 2.5h5"></path></svg>
+      <span>Timer</span>
+    </button>
   </nav>
 
   <!-- Veckan -->
   <section class="panel" id="panel-week" role="tabpanel" aria-labelledby="tab-week">
     <form class="add" id="sessForm" autocomplete="off">
+      <div class="sheet-head"><h2>Nytt pluggpass</h2><button class="x" type="button" data-close aria-label="Stäng">×</button></div>
       <div class="field wide">
         <label class="lbl" for="sSubj">Ämne</label>
-        <input type="text" id="sSubj" list="subjList" placeholder="t.ex. Matematik 1c" maxlength="40">
+        <input type="text" id="sSubj" list="subjList" placeholder="t.ex. Matematik 1c" maxlength="40" enterkeyhint="done">
       </div>
+      <div class="chips" id="sChips" aria-label="Tidigare ämnen"></div>
       <div class="field full">
         <label class="lbl" for="sDay">Dag</label>
         <select id="sDay"></select>
@@ -332,8 +421,8 @@ input[type="text"], input[type="time"], input[type="date"], input[type="number"]
         <label class="lbl" for="sEnd">Till</label>
         <input type="time" id="sEnd" value="17:00">
       </div>
-      <button class="btn primary" type="submit">Lägg till pass</button>
       <p class="err" id="sErr" hidden></p>
+      <button class="btn primary" type="submit">Lägg till pass</button>
     </form>
     <div class="daypick" id="daypick" role="group" aria-label="Välj dag"></div>
     <div class="week" id="week"></div>
@@ -342,14 +431,16 @@ input[type="text"], input[type="time"], input[type="date"], input[type="number"]
   <!-- Prov och läxor -->
   <section class="panel" id="panel-tasks" role="tabpanel" aria-labelledby="tab-tasks" hidden>
     <form class="add" id="taskForm" autocomplete="off">
+      <div class="sheet-head"><h2>Nytt prov eller läxa</h2><button class="x" type="button" data-close aria-label="Stäng">×</button></div>
       <div class="field wide">
         <label class="lbl" for="tTitle">Vad</label>
-        <input type="text" id="tTitle" placeholder="t.ex. Prov kapitel 3, derivata" maxlength="80">
+        <input type="text" id="tTitle" placeholder="t.ex. Prov kapitel 3, derivata" maxlength="80" enterkeyhint="next">
       </div>
       <div class="field">
         <label class="lbl" for="tSubj">Ämne</label>
         <input type="text" id="tSubj" list="subjList" placeholder="Ämne" maxlength="40">
       </div>
+      <div class="chips" id="tChips" aria-label="Tidigare ämnen"></div>
       <div class="field narrow">
         <label class="lbl" for="tType">Typ</label>
         <select id="tType">
@@ -358,12 +449,12 @@ input[type="text"], input[type="time"], input[type="date"], input[type="number"]
           <option value="inlämning">Inlämning</option>
         </select>
       </div>
-      <div class="field full">
+      <div class="field narrow">
         <label class="lbl" for="tDate">Datum</label>
         <input type="date" id="tDate">
       </div>
-      <button class="btn primary" type="submit">Lägg till</button>
       <p class="err" id="tErr" hidden></p>
+      <button class="btn primary" type="submit">Lägg till</button>
     </form>
     <div class="tasks" id="tasks"></div>
   </section>
@@ -394,13 +485,13 @@ input[type="text"], input[type="time"], input[type="date"], input[type="number"]
             <label class="lbl" for="tmSubj">Jag pluggar</label>
             <input type="text" id="tmSubj" list="subjList" placeholder="Valfritt ämne" maxlength="40">
           </div>
-          <div class="field narrow">
+          <div class="field">
             <label class="lbl" for="tmWork">Plugg, min</label>
-            <input type="number" id="tmWork" min="1" max="120" value="25">
+            <input type="number" id="tmWork" min="1" max="120" value="25" inputmode="numeric">
           </div>
-          <div class="field narrow">
+          <div class="field">
             <label class="lbl" for="tmBreak">Paus, min</label>
-            <input type="number" id="tmBreak" min="1" max="60" value="5">
+            <input type="number" id="tmBreak" min="1" max="60" value="5" inputmode="numeric">
           </div>
         </div>
         <div class="tally">
@@ -415,13 +506,21 @@ input[type="text"], input[type="time"], input[type="date"], input[type="number"]
   <div class="saveinfo" id="saveinfo">Hämtar ditt schema …</div>
 </div>
 
+<button class="fab" id="fab" type="button">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+  <span id="fabTxt">Nytt pass</span>
+</button>
+<div class="scrim" id="scrim"></div>
+
 <script>
 (() => {
   const DAYS = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag", "Söndag"];
   const SHORT = ["Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön"];
   const MONTHS = ["jan", "feb", "mar", "apr", "maj", "jun", "jul", "aug", "sep", "okt", "nov", "dec"];
+  const MONTHS_LONG = ["januari", "februari", "mars", "april", "maj", "juni", "juli", "augusti", "september", "oktober", "november", "december"];
   const LS_KEY = "pluggschema-v1";
   const $ = (id) => document.getElementById(id);
+  const isPhone = () => window.matchMedia("(max-width: 760px)").matches;
 
   let state = blank();
   function blank() {
@@ -457,6 +556,7 @@ input[type="text"], input[type="time"], input[type="date"], input[type="number"]
   const parseISO = (s) => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
   const mins = (t) => { const [h, m] = t.split(":").map(Number); return h * 60 + m; };
   const fmtDur = (m) => (m >= 60 ? `${Math.floor(m / 60)} h${m % 60 ? " " + (m % 60) + " min" : ""}` : `${m} min`);
+  const nowMins = () => { const d = new Date(); return d.getHours() * 60 + d.getMinutes(); };
 
   // ---------- ämnesfärger ----------
   const subjKey = (s) => s.trim().toLowerCase();
@@ -465,9 +565,8 @@ input[type="text"], input[type="time"], input[type="date"], input[type="number"]
     if (!k) return "var(--muted)";
     if (!state.subjects[k]) {
       const used = Object.values(state.subjects).map((s) => s.c);
-      let c = 1;
+      let c = (used.length % 6) + 1;
       for (let i = 1; i <= 6; i++) if (!used.includes(i)) { c = i; break; }
-      if (used.length >= 6) c = (used.length % 6) + 1;
       state.subjects[k] = { name: name.trim(), c };
     }
     return `var(--s${state.subjects[k].c})`;
@@ -488,6 +587,18 @@ input[type="text"], input[type="time"], input[type="date"], input[type="number"]
   }
   const uid = () => Math.random().toString(36).slice(2, 10);
   function showErr(el, msg) { el.textContent = msg; el.hidden = !msg; }
+  const CHECK = () => { const s = document.createElementNS("http://www.w3.org/2000/svg", "svg"); s.setAttribute("viewBox", "0 0 24 24"); s.setAttribute("aria-hidden", "true"); s.innerHTML = '<path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>'; return s; };
+
+  // Ämnesknappar i formuläret, så man slipper skriva samma ämne igen
+  function renderChips(boxId, inputId) {
+    const cur = subjKey($(inputId).value);
+    $(boxId).replaceChildren(...Object.values(state.subjects).slice(0, 8).map((s) =>
+      h("button", { type: "button", "aria-pressed": String(subjKey(s.name) === cur), onclick: () => { $(inputId).value = s.name; renderChips(boxId, inputId); } },
+        h("span", { class: "dot", style: `--c:var(--s${s.c})` }), s.name)));
+    $(boxId).hidden = !Object.keys(state.subjects).length;
+  }
+  $("sSubj").addEventListener("input", () => renderChips("sChips", "sSubj"));
+  $("tSubj").addEventListener("input", () => renderChips("tChips", "tSubj"));
 
   // ---------- rubrik ----------
   function renderTop() {
@@ -503,30 +614,60 @@ input[type="text"], input[type="time"], input[type="date"], input[type="number"]
   function renderWeek() {
     const mon = mondayOf(new Date());
     const tIdx = dayIdx(new Date());
-    $("sDay").replaceChildren(...DAYS.map((d, i) => h("option", { value: i, selected: i === +($("sDay").value || tIdx) }, d)));
+    const daySessions = (i) => state.sessions.filter((s) => s.day === i).sort((a, b) => mins(a.start) - mins(b.start));
 
     $("daypick").replaceChildren(...SHORT.map((d, i) => {
       const date = new Date(mon); date.setDate(mon.getDate() + i);
-      return h("button", { type: "button", "aria-pressed": String(i === pickedDay), onclick: () => { pickedDay = i; renderWeek(); } },
-        d, h("small", {}, String(date.getDate())));
+      const list = daySessions(i);
+      return h("button", { type: "button", class: i === tIdx ? "is-today" : null, "aria-pressed": String(i === pickedDay), "aria-label": `${DAYS[i]} ${fmtDay(date)}, ${list.length} pass`, onclick: () => { pickedDay = i; renderWeek(); } },
+        h("span", { class: "dn" }, d),
+        h("span", { class: "dd" }, String(date.getDate())),
+        h("span", { class: "dots" }, list.slice(0, 3).map((s) => h("i", { style: `--c:${colorFor(s.subject)}` }))));
     }));
 
     $("week").replaceChildren(...DAYS.map((name, i) => {
       const date = new Date(mon); date.setDate(mon.getDate() + i);
-      const list = state.sessions.filter((s) => s.day === i).sort((a, b) => mins(a.start) - mins(b.start));
+      const list = daySessions(i);
       const total = list.reduce((t, s) => t + Math.max(0, mins(s.end) - mins(s.start)), 0);
-      const cls = ["day", i === tIdx && "is-today", i >= 5 && "is-weekend", i === pickedDay && "is-picked"].filter(Boolean).join(" ");
+      const cls = ["day", i === tIdx && "is-today", i === pickedDay && "is-picked"].filter(Boolean).join(" ");
+      const label = i === tIdx ? "Idag" : i === tIdx + 1 ? "Imorgon" : name;
       return h("div", { class: cls },
         h("div", { class: "dayhead" }, h("strong", {}, SHORT[i]), h("span", {}, fmtDay(date))),
-        list.length ? list.map((s) => h("div", { class: "slot", style: `--c:${colorFor(s.subject)}` },
-          h("div", { class: "time" }, `${s.start}–${s.end}`),
-          h("div", { class: "subj" }, h("span", { class: "dot" }), s.subject),
-          h("button", { class: "x", type: "button", "aria-label": `Ta bort ${s.subject} ${SHORT[i]} ${s.start}`, onclick: () => { state.sessions = state.sessions.filter((x) => x.id !== s.id); changed(); } }, "×")
-        )) : h("div", { class: "none" }, "Inget pass"),
+        h("div", { class: "dayfull" }, h("h2", {}, label), h("span", {}, `${name.toLowerCase()} ${date.getDate()} ${MONTHS_LONG[date.getMonth()]}${total ? " · " + fmtDur(total) : ""}`)),
+        list.length ? list.map((s) => {
+          const len = Math.max(0, mins(s.end) - mins(s.start));
+          const live = i === tIdx && nowMins() >= mins(s.start) && nowMins() < mins(s.end);
+          const past = i < tIdx || (i === tIdx && nowMins() >= mins(s.end));
+          return h("div", { class: `slot${past ? " past" : ""}`, style: `--c:${colorFor(s.subject)}` },
+            h("div", { class: "slot-time" }, h("b", {}, s.start), h("span", {}, s.end)),
+            h("div", {},
+              h("div", { class: "subj" }, h("span", { class: "dot" }), s.subject),
+              h("div", { class: "dur" }, fmtDur(len), live ? h("span", { class: "now" }, "pågår nu") : null)),
+            h("button", { class: "x", type: "button", "aria-label": `Ta bort ${s.subject} ${SHORT[i]} ${s.start}`, onclick: () => { state.sessions = state.sessions.filter((x) => x.id !== s.id); changed(); } }, "×"));
+        }) : h("div", { class: "none" },
+          h("span", {}, i >= 5 ? "Ledigt. Perfekt dag att vara ute." : "Inget pass inlagt."),
+          h("button", { class: "btn small", type: "button", onclick: () => openSheet("week", i) }, `Lägg till pass på ${name.toLowerCase()}`)),
         total ? h("div", { class: "daytotal" }, `Totalt ${fmtDur(total)}`) : null
       );
     }));
   }
+  function fillDaySelect(sel) {
+    $("sDay").replaceChildren(...DAYS.map((d, i) => h("option", { value: i, selected: i === sel }, d)));
+  }
+  fillDaySelect(pickedDay);
+
+  // Svep åt sidan för att byta dag på mobilen
+  let touchX = null, touchY = null;
+  $("week").addEventListener("touchstart", (e) => { touchX = e.touches[0].clientX; touchY = e.touches[0].clientY; }, { passive: true });
+  $("week").addEventListener("touchend", (e) => {
+    if (touchX == null) return;
+    const dx = e.changedTouches[0].clientX - touchX, dy = e.changedTouches[0].clientY - touchY;
+    touchX = null;
+    if (Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx)) return;
+    pickedDay = Math.min(6, Math.max(0, pickedDay + (dx < 0 ? 1 : -1)));
+    renderWeek();
+  });
+
   $("sessForm").addEventListener("submit", (e) => {
     e.preventDefault();
     const subject = $("sSubj").value.trim(), start = $("sStart").value, end = $("sEnd").value, day = +$("sDay").value;
@@ -538,6 +679,7 @@ input[type="text"], input[type="time"], input[type="date"], input[type="number"]
     state.sessions.push({ id: uid(), subject, day, start, end });
     pickedDay = day;
     $("sSubj").value = "";
+    closeSheet();
     changed();
   });
 
@@ -552,34 +694,32 @@ input[type="text"], input[type="time"], input[type="date"], input[type="number"]
     const t0 = todayStart();
     const open = state.tasks.filter((t) => !t.done).sort((a, b) => a.date.localeCompare(b.date));
     const done = state.tasks.filter((t) => t.done).sort((a, b) => b.date.localeCompare(a.date));
-    $("taskcount").textContent = String(open.length);
+    const urgent = open.filter((t) => Math.round((parseISO(t.date) - t0) / 86400000) <= 2).length;
+    $("taskcount").textContent = urgent ? String(urgent) : "";
 
     const row = (t) => {
       const d = parseISO(t.date);
       const n = Math.round((d - t0) / 86400000);
       const chipCls = t.done ? "chip ok" : n < 0 ? "chip late" : n <= 2 ? "chip soon" : "chip";
       const chipTxt = t.done ? "klar" : n < 0 ? `försenad, ${relDays(n)}` : relDays(n);
-      const cb = h("input", { type: "checkbox", id: `cb-${t.id}`, "aria-label": `Klar: ${t.title}`, onchange: (e) => { t.done = e.target.checked; changed(); } });
-      cb.checked = !!t.done;
-      return h("div", { class: `task ${t.done ? "done" : ""} ${t.type === "prov" ? "prov" : ""}` },
-        cb,
+      return h("div", { class: `task${t.done ? " done" : ""}${t.type === "prov" ? " prov" : ""}` },
+        h("button", { class: "check", type: "button", "aria-pressed": String(!!t.done), "aria-label": t.done ? `Markera som inte klar: ${t.title}` : `Markera som klar: ${t.title}`, onclick: () => { t.done = !t.done; changed(); } }, CHECK()),
+        h("div", { class: "datebox", "aria-hidden": "true" }, h("b", {}, String(d.getDate())), h("span", {}, `${SHORT[dayIdx(d)]} ${MONTHS[d.getMonth()]}`)),
         h("div", {},
           h("div", { class: "t-title" }, t.title),
           h("div", { class: "t-meta" },
-            t.subject ? [h("span", { class: "dot", style: `--c:${colorFor(t.subject)}` }), h("span", {}, t.subject)] : null,
-            h("span", { class: "chip type" }, t.type))
-        ),
-        h("div", { class: "t-when" }, `${SHORT[dayIdx(d)].toLowerCase()} ${fmtDay(d)}`, h("br"), h("span", { class: chipCls }, chipTxt)),
-        h("button", { class: "x", type: "button", "aria-label": `Ta bort ${t.title}`, onclick: () => { state.tasks = state.tasks.filter((x) => x.id !== t.id); changed(); } }, "×")
-      );
+            h("span", { class: chipCls }, chipTxt),
+            h("span", { class: "chip type" }, t.type),
+            t.subject ? h("span", { class: "sub" }, h("span", { class: "dot", style: `--c:${colorFor(t.subject)}` }), t.subject) : null)),
+        h("button", { class: "x", type: "button", "aria-label": `Ta bort ${t.title}`, onclick: () => { state.tasks = state.tasks.filter((x) => x.id !== t.id); changed(); } }, "×"));
     };
 
     const kids = [];
-    if (!state.tasks.length) kids.push(h("div", { class: "empty" }, "Inga prov eller läxor än. Lägg till det första ovan, så sorteras allt efter datum."));
+    if (!state.tasks.length) kids.push(h("div", { class: "empty" }, "Inga prov eller läxor än. Tryck på Ny uppgift så sorteras allt efter datum."));
     else {
       const prov = open.filter((t) => t.type === "prov").length;
       kids.push(h("div", { class: "group-title" }, `Kommande · ${open.length} st${prov ? `, varav ${prov} prov` : ""}`));
-      if (open.length) kids.push(...open.map(row)); else kids.push(h("div", { class: "empty" }, "Allt är klart. Snyggt!"));
+      if (open.length) kids.push(...open.map(row)); else kids.push(h("div", { class: "empty" }, "Allt är klart. Dags att gå ut en sväng!"));
       if (done.length) { kids.push(h("div", { class: "group-title" }, `Klart · ${done.length} st`)); kids.push(...done.map(row)); }
     }
     $("tasks").replaceChildren(...kids);
@@ -593,8 +733,27 @@ input[type="text"], input[type="time"], input[type="date"], input[type="number"]
     if (subject) colorFor(subject);
     state.tasks.push({ id: uid(), title, subject, type, date, done: false });
     $("tTitle").value = "";
+    closeSheet();
     changed();
   });
+
+  // ---------- ark (mobil) ----------
+  let tab = "week";
+  function openSheet(which, day) {
+    const form = which === "week" ? $("sessForm") : $("taskForm");
+    if (which === "week") { fillDaySelect(day ?? pickedDay); renderChips("sChips", "sSubj"); }
+    else { if (!$("tDate").value) { const d = new Date(); d.setDate(d.getDate() + 7); $("tDate").value = iso(d); } renderChips("tChips", "tSubj"); }
+    if (!isPhone()) { form.querySelector("input").focus(); return; }
+    form.classList.add("open"); $("scrim").classList.add("open"); document.body.classList.add("noscroll");
+  }
+  function closeSheet() {
+    document.querySelectorAll("form.add.open").forEach((f) => f.classList.remove("open"));
+    $("scrim").classList.remove("open"); document.body.classList.remove("noscroll");
+  }
+  $("fab").addEventListener("click", () => openSheet(tab));
+  $("scrim").addEventListener("click", closeSheet);
+  document.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", closeSheet));
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeSheet(); });
 
   // ---------- timer ----------
   const RING = 2 * Math.PI * 52;
@@ -610,10 +769,10 @@ input[type="text"], input[type="time"], input[type="date"], input[type="number"]
     $("modeLbl").textContent = isWork ? "Plugg" : "Paus";
     $("clock").textContent = fmtClock(left);
     $("ring").style.strokeDashoffset = RING * (1 - left / total());
-    $("tStart").textContent = T.running ? "Pausa" : left < total() ? "Fortsätt" : "Starta";
+    $("tStart").textContent = T.running ? "Pausa" : left < total() ? "Fortsätt" : isWork ? "Starta plugg" : "Starta paus";
     $("tSkip").textContent = isWork ? "Hoppa till paus" : "Hoppa till plugg";
     const subj = $("tmSubj").value.trim();
-    $("timerSubj").textContent = isWork && subj ? subj : isWork ? "" : "Res dig, drick vatten, gå ut en sväng";
+    $("timerSubj").textContent = isWork ? subj : "Res dig, drick vatten, gå ut en sväng";
     document.title = T.running ? `${fmtClock(left)} ${isWork ? "Plugg" : "Paus"} · Pluggschema` : "Pluggschema";
 
     const n = state.pomodoros[iso(new Date())] || 0;
@@ -658,12 +817,17 @@ input[type="text"], input[type="time"], input[type="date"], input[type="number"]
 
   // ---------- flikar ----------
   function setTab(name) {
+    tab = name;
+    closeSheet();
     document.querySelectorAll(".tab").forEach((t) => t.setAttribute("aria-selected", String(t.dataset.tab === name)));
     for (const p of ["week", "tasks", "timer"]) $("panel-" + p).hidden = p !== name;
+    $("fab").hidden = name === "timer";
+    $("fabTxt").textContent = name === "week" ? "Nytt pass" : "Ny uppgift";
+    window.scrollTo({ top: 0 });
     try { localStorage.setItem(LS_KEY + "-tab", name); } catch {}
   }
   document.querySelectorAll(".tab").forEach((t) => t.addEventListener("click", () => setTab(t.dataset.tab)));
-  try { const t = localStorage.getItem(LS_KEY + "-tab"); if (t) setTab(t); } catch {}
+  try { const t = localStorage.getItem(LS_KEY + "-tab"); setTab(t || "week"); } catch { setTab("week"); }
 
   // ---------- exempel ----------
   $("clearEx").addEventListener("click", () => { state = { ...blank(), timer: state.timer }; changed(); });
@@ -675,7 +839,10 @@ input[type="text"], input[type="time"], input[type="date"], input[type="number"]
     $("exbanner").hidden = !state.example;
     $("tmWork").value = state.timer.work; $("tmBreak").value = state.timer.brk;
     $("subjList").replaceChildren(...Object.values(state.subjects).map((s) => h("option", { value: s.name })));
+    renderChips("sChips", "sSubj"); renderChips("tChips", "tSubj");
   }
+  // Uppdatera "pågår nu" och gråa pass varje minut
+  setInterval(renderWeek, 60000);
 
   // ---------- spara ----------
   let docRef = null, saveTimer = null, saving = false, dirty = false;
