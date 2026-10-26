@@ -257,14 +257,36 @@ input[type="text"], input[type="time"], input[type="date"], input[type="number"]
 .saveinfo { font-size: 12px; color: var(--muted); font-family: var(--font-mono); }
 
 @media (max-width: 760px) {
+  .wrap { padding-block: 18px 40px; gap: 16px; }
+  .tabs { align-self: stretch; }
+  .tab { flex: 1 1 auto; justify-content: center; padding: 10px 8px; }
+
+  /* Formulär: två kolumner, breda fält och knappen över hela raden */
+  form.add, .tsettings { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+  form.add .field.wide, form.add .field.full, form.add .btn, form.add .err, .tsettings .field.full { grid-column: 1 / -1; }
+  form.add .btn { min-height: 46px; }
+  /* 16px hindrar iPhone från att zooma in när man trycker i ett fält */
+  input[type="text"], input[type="time"], input[type="date"], input[type="number"], select { font-size: 16px; min-height: 44px; }
+  input[type="date"], input[type="time"] { display: block; min-width: 0; -webkit-appearance: none; appearance: none; }
+
   .daypick { display: flex; }
+  .daypick button { min-height: 48px; }
   .week { grid-template-columns: minmax(0, 1fr); }
   .week .day:not(.is-picked) { display: none; }
-  .week .dayhead { display: none; }
-  .timer { grid-template-columns: minmax(0, 1fr); padding: 18px; }
-  .task { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .slot { padding: 10px 44px 11px 12px; }
+  .x { width: 36px; height: 36px; font-size: 20px; }
+
+  .task { grid-template-columns: auto minmax(0, 1fr) auto; padding: 12px; }
   .task .t-when { grid-column: 2 / 3; text-align: left; }
+  .task .t-when br { display: none; }
+  .task .t-when .chip { margin-left: 6px; }
   .task .x { grid-row: 1; grid-column: 3; }
+
+  .timer { grid-template-columns: minmax(0, 1fr); padding: 18px; gap: 20px; }
+  .ringbox { max-width: 280px; }
+  .tbtns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .tbtns .btn { min-width: 0; min-height: 46px; }
+  .tbtns .btn.primary { grid-column: 1 / -1; }
 }
 @media (prefers-reduced-motion: reduce) {
   .ringbox .prog { transition: none; }
@@ -298,7 +320,7 @@ input[type="text"], input[type="time"], input[type="date"], input[type="number"]
         <label class="lbl" for="sSubj">Ämne</label>
         <input type="text" id="sSubj" list="subjList" placeholder="t.ex. Matematik 1c" maxlength="40">
       </div>
-      <div class="field">
+      <div class="field full">
         <label class="lbl" for="sDay">Dag</label>
         <select id="sDay"></select>
       </div>
@@ -336,7 +358,7 @@ input[type="text"], input[type="time"], input[type="date"], input[type="number"]
           <option value="inlämning">Inlämning</option>
         </select>
       </div>
-      <div class="field">
+      <div class="field full">
         <label class="lbl" for="tDate">Datum</label>
         <input type="date" id="tDate">
       </div>
@@ -368,7 +390,7 @@ input[type="text"], input[type="time"], input[type="date"], input[type="number"]
           <button class="btn" id="tSkip" type="button">Hoppa till paus</button>
         </div>
         <div class="tsettings">
-          <div class="field">
+          <div class="field full">
             <label class="lbl" for="tmSubj">Jag pluggar</label>
             <input type="text" id="tmSubj" list="subjList" placeholder="Valfritt ämne" maxlength="40">
           </div>
