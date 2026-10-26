@@ -1,0 +1,704 @@
+<title>Pluggschema</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: en kolumn med rubrikrad, flikar och en arbetsyta; veckan som 7 kolumner på bred skärm, en dag i taget på mobil. */
+:root {
+  --bg: #EEF2EF;
+  --surface: #FBFCFB;
+  --ink: #15201B;
+  --muted: #56675E;
+  --line: #D3DCD6;
+  --accent: #23664A;
+  --accent-ink: #FFFFFF;
+  --pause: #9A6B00;
+  --warn: #B0500F;
+  --danger: #B32929;
+  --font-display: "Familjen Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --s1: #3B74C9; --s2: #C4501A; --s3: #7B57D6; --s4: #138A5E; --s5: #C93A74; --s6: #A07A00;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0F1613; --surface: #16201B; --ink: #E2EBE5; --muted: #93A69B; --line: #29372F;
+    --accent: #5CBB8C; --accent-ink: #0B1711; --pause: #E2B44A; --warn: #EE9A58; --danger: #F27D7D;
+    --s1: #78A7EE; --s2: #F08A55; --s3: #A98CF2; --s4: #4DC795; --s5: #EE79A6; --s6: #D9B13C;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0F1613; --surface: #16201B; --ink: #E2EBE5; --muted: #93A69B; --line: #29372F;
+  --accent: #5CBB8C; --accent-ink: #0B1711; --pause: #E2B44A; --warn: #EE9A58; --danger: #F27D7D;
+  --s1: #78A7EE; --s2: #F08A55; --s3: #A98CF2; --s4: #4DC795; --s5: #EE79A6; --s6: #D9B13C;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+}
+.wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding-block: 28px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Rubrik */
+header.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 8px 24px; }
+h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(34px, 6vw, 52px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin: 0;
+  text-wrap: balance;
+}
+.today {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--muted);
+  display: flex; gap: 14px; flex-wrap: wrap;
+  font-variant-numeric: tabular-nums;
+}
+.today b { color: var(--ink); font-weight: 500; }
+
+/* Flikar */
+.tabs {
+  display: flex; gap: 4px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 4px;
+  align-self: flex-start;
+  max-width: 100%;
+  overflow-x: auto;
+}
+.tab {
+  border: 0; background: transparent; cursor: pointer;
+  padding: 8px 16px; border-radius: 8px;
+  font-family: var(--font-display); font-weight: 600; font-size: 15px;
+  color: var(--muted); white-space: nowrap;
+  display: flex; align-items: center; gap: 8px;
+}
+.tab:hover { color: var(--ink); }
+.tab[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); }
+.count {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+  min-width: 20px; padding: 1px 6px; border-radius: 99px;
+  background: color-mix(in srgb, currentColor 16%, transparent);
+  text-align: center;
+}
+
+/* Banner */
+.banner {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px;
+  padding: 12px 16px; border-radius: 10px;
+  background: color-mix(in srgb, var(--pause) 13%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--pause) 35%, var(--line));
+}
+.banner p { margin: 0; flex: 1 1 260px; }
+.banner .btns { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* Formulär */
+.panel { display: flex; flex-direction: column; gap: 18px; }
+form.add {
+  display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 12px;
+  padding: 14px; border-radius: 12px;
+  background: var(--surface); border: 1px solid var(--line);
+}
+.field { display: flex; flex-direction: column; gap: 4px; flex: 1 1 130px; min-width: 0; }
+.field.wide { flex: 3 1 220px; }
+.field.narrow { flex: 0 1 110px; }
+label.lbl {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--muted); font-weight: 700;
+}
+input[type="text"], input[type="time"], input[type="date"], input[type="number"], select {
+  width: 100%;
+  padding: 8px 10px; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--bg);
+  min-height: 40px;
+}
+.btn {
+  border: 1px solid var(--line); background: var(--surface);
+  padding: 8px 14px; border-radius: 8px; cursor: pointer;
+  min-height: 40px; font-weight: 700;
+}
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.small { min-height: 32px; padding: 4px 12px; font-size: 14px; }
+.err { color: var(--danger); font-size: 14px; flex-basis: 100%; margin: 0; }
+
+/* Veckan */
+.daypick { display: none; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
+.daypick button {
+  flex: 1 0 auto; border: 1px solid var(--line); background: var(--surface);
+  border-radius: 8px; padding: 6px 10px; cursor: pointer;
+  font-family: var(--font-display); font-weight: 600;
+  display: flex; flex-direction: column; align-items: center; line-height: 1.2;
+}
+.daypick button small { font-family: var(--font-mono); font-size: 11px; color: var(--muted); font-weight: 400; }
+.daypick button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.daypick button[aria-pressed="true"] small { color: inherit; }
+.week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
+.day { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.dayhead {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 6px;
+  padding: 6px 4px 8px; border-bottom: 2px solid var(--line);
+}
+.dayhead strong { font-family: var(--font-display); font-size: 16px; font-weight: 700; }
+.dayhead span { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+.day.is-today .dayhead { border-bottom-color: var(--accent); }
+.day.is-today .dayhead strong { color: var(--accent); }
+.day.is-weekend .dayhead strong { color: var(--muted); }
+.slot {
+  position: relative;
+  padding: 8px 30px 9px 10px; border-radius: 8px;
+  background: color-mix(in srgb, var(--c) 14%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--c) 30%, transparent);
+  min-width: 0;
+}
+.slot .time { font-family: var(--font-mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.slot .subj { font-weight: 700; line-height: 1.25; overflow-wrap: anywhere; display: flex; align-items: center; gap: 6px; }
+.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--c); flex: none; }
+.x {
+  position: absolute; top: 4px; right: 4px;
+  width: 24px; height: 24px; border-radius: 6px; border: 0;
+  background: transparent; color: var(--muted); cursor: pointer; font-size: 17px; line-height: 1;
+}
+.x:hover { background: color-mix(in srgb, var(--danger) 14%, transparent); color: var(--danger); }
+.none { color: var(--muted); font-size: 13px; padding: 6px 4px; font-style: italic; }
+.daytotal { font-family: var(--font-mono); font-size: 11px; color: var(--muted); padding: 0 4px; }
+
+/* Prov och läxor */
+.tasks { display: flex; flex-direction: column; gap: 6px; }
+.group-title {
+  font-family: var(--font-display); font-weight: 600; font-size: 13px;
+  text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted);
+  margin: 10px 0 2px;
+}
+.task {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: 4px 12px;
+  padding: 10px 12px; border-radius: 10px;
+  background: var(--surface); border: 1px solid var(--line);
+}
+.task input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); margin: 0; cursor: pointer; }
+.task .t-title { font-weight: 700; overflow-wrap: anywhere; }
+.task .t-meta { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.task .t-when { text-align: right; font-family: var(--font-mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.task .x { position: static; }
+.chip {
+  display: inline-block; font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+  padding: 2px 8px; border-radius: 99px; white-space: nowrap;
+  background: color-mix(in srgb, var(--k, var(--muted)) 15%, transparent);
+  color: var(--k, var(--muted));
+}
+.chip.type { --k: var(--ink); background: transparent; border: 1px solid var(--line); color: var(--muted); }
+.chip.soon { --k: var(--warn); }
+.chip.late { --k: var(--danger); }
+.chip.ok { --k: var(--accent); }
+.task.done .t-title { text-decoration: line-through; color: var(--muted); font-weight: 400; }
+.task.done { background: transparent; }
+.task.prov:not(.done) { border-color: color-mix(in srgb, var(--warn) 40%, var(--line)); }
+.empty {
+  padding: 28px 16px; text-align: center; color: var(--muted);
+  border: 1px dashed var(--line); border-radius: 12px;
+}
+
+/* Timer */
+.timer {
+  display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 28px; align-items: center;
+  padding: 24px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line);
+}
+.ringbox { position: relative; width: 100%; max-width: 340px; aspect-ratio: 1; margin: 0 auto; }
+.ringbox svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ringbox circle { fill: none; stroke-width: 10; }
+.ringbox .track { stroke: var(--line); }
+.ringbox .prog { stroke: var(--mode); stroke-linecap: round; transition: stroke-dashoffset 0.3s linear; }
+.ringtxt {
+  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+}
+.mode-lbl {
+  font-family: var(--font-display); font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--mode);
+}
+.clock { font-family: var(--font-mono); font-weight: 500; font-size: clamp(48px, 12vw, 72px); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; line-height: 1; }
+.ringtxt small { color: var(--muted); font-size: 13px; max-width: 80%; text-align: center; overflow-wrap: anywhere; }
+.tside { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.tbtns { display: flex; gap: 8px; flex-wrap: wrap; }
+.tbtns .btn { min-width: 110px; }
+.tsettings { display: flex; flex-wrap: wrap; gap: 12px; }
+.tally { display: flex; flex-direction: column; gap: 6px; }
+.tally .pips { display: flex; flex-wrap: wrap; gap: 5px; min-height: 14px; }
+.pip { width: 14px; height: 14px; border-radius: 4px; background: var(--accent); }
+.tally p { margin: 0; color: var(--muted); font-size: 14px; }
+.tally strong { color: var(--ink); }
+.ding {
+  padding: 12px 16px; border-radius: 10px; font-weight: 700;
+  background: color-mix(in srgb, var(--mode) 16%, var(--surface));
+  border: 1px solid var(--mode);
+}
+.saveinfo { font-size: 12px; color: var(--muted); font-family: var(--font-mono); }
+
+@media (max-width: 760px) {
+  .daypick { display: flex; }
+  .week { grid-template-columns: minmax(0, 1fr); }
+  .week .day:not(.is-picked) { display: none; }
+  .week .dayhead { display: none; }
+  .timer { grid-template-columns: minmax(0, 1fr); padding: 18px; }
+  .task { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .task .t-when { grid-column: 2 / 3; text-align: left; }
+  .task .x { grid-row: 1; grid-column: 3; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ringbox .prog { transition: none; }
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <h1>Pluggschema</h1>
+    <div class="today" id="todayline"></div>
+  </header>
+
+  <div class="banner" id="exbanner" hidden>
+    <p>Det här är exempel så att du ser hur det ser ut. Byt ut dem mot dina egna pass och prov.</p>
+    <div class="btns">
+      <button class="btn small" id="clearEx" type="button">Rensa exemplen</button>
+      <button class="btn small" id="keepEx" type="button">Behåll dem</button>
+    </div>
+  </div>
+
+  <nav class="tabs" role="tablist" aria-label="Delar av schemat">
+    <button class="tab" role="tab" id="tab-week" data-tab="week" aria-selected="true">Veckan</button>
+    <button class="tab" role="tab" id="tab-tasks" data-tab="tasks" aria-selected="false">Prov &amp; läxor <span class="count" id="taskcount">0</span></button>
+    <button class="tab" role="tab" id="tab-timer" data-tab="timer" aria-selected="false">Timer</button>
+  </nav>
+
+  <!-- Veckan -->
+  <section class="panel" id="panel-week" role="tabpanel" aria-labelledby="tab-week">
+    <form class="add" id="sessForm" autocomplete="off">
+      <div class="field wide">
+        <label class="lbl" for="sSubj">Ämne</label>
+        <input type="text" id="sSubj" list="subjList" placeholder="t.ex. Matematik 1c" maxlength="40">
+      </div>
+      <div class="field">
+        <label class="lbl" for="sDay">Dag</label>
+        <select id="sDay"></select>
+      </div>
+      <div class="field narrow">
+        <label class="lbl" for="sStart">Från</label>
+        <input type="time" id="sStart" value="16:00">
+      </div>
+      <div class="field narrow">
+        <label class="lbl" for="sEnd">Till</label>
+        <input type="time" id="sEnd" value="17:00">
+      </div>
+      <button class="btn primary" type="submit">Lägg till pass</button>
+      <p class="err" id="sErr" hidden></p>
+    </form>
+    <div class="daypick" id="daypick" role="group" aria-label="Välj dag"></div>
+    <div class="week" id="week"></div>
+  </section>
+
+  <!-- Prov och läxor -->
+  <section class="panel" id="panel-tasks" role="tabpanel" aria-labelledby="tab-tasks" hidden>
+    <form class="add" id="taskForm" autocomplete="off">
+      <div class="field wide">
+        <label class="lbl" for="tTitle">Vad</label>
+        <input type="text" id="tTitle" placeholder="t.ex. Prov kapitel 3, derivata" maxlength="80">
+      </div>
+      <div class="field">
+        <label class="lbl" for="tSubj">Ämne</label>
+        <input type="text" id="tSubj" list="subjList" placeholder="Ämne" maxlength="40">
+      </div>
+      <div class="field narrow">
+        <label class="lbl" for="tType">Typ</label>
+        <select id="tType">
+          <option value="prov">Prov</option>
+          <option value="läxa">Läxa</option>
+          <option value="inlämning">Inlämning</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="lbl" for="tDate">Datum</label>
+        <input type="date" id="tDate">
+      </div>
+      <button class="btn primary" type="submit">Lägg till</button>
+      <p class="err" id="tErr" hidden></p>
+    </form>
+    <div class="tasks" id="tasks"></div>
+  </section>
+
+  <!-- Timer -->
+  <section class="panel" id="panel-timer" role="tabpanel" aria-labelledby="tab-timer" hidden>
+    <div class="timer" id="timerBox">
+      <div class="ringbox">
+        <svg viewBox="0 0 120 120" aria-hidden="true">
+          <circle class="track" cx="60" cy="60" r="52"></circle>
+          <circle class="prog" id="ring" cx="60" cy="60" r="52"></circle>
+        </svg>
+        <div class="ringtxt">
+          <span class="mode-lbl" id="modeLbl">Plugg</span>
+          <span class="clock" id="clock" role="timer" aria-live="off">25:00</span>
+          <small id="timerSubj"></small>
+        </div>
+      </div>
+      <div class="tside">
+        <div class="ding" id="ding" hidden></div>
+        <div class="tbtns">
+          <button class="btn primary" id="tStart" type="button">Starta</button>
+          <button class="btn" id="tReset" type="button">Nollställ</button>
+          <button class="btn" id="tSkip" type="button">Hoppa till paus</button>
+        </div>
+        <div class="tsettings">
+          <div class="field">
+            <label class="lbl" for="tmSubj">Jag pluggar</label>
+            <input type="text" id="tmSubj" list="subjList" placeholder="Valfritt ämne" maxlength="40">
+          </div>
+          <div class="field narrow">
+            <label class="lbl" for="tmWork">Plugg, min</label>
+            <input type="number" id="tmWork" min="1" max="120" value="25">
+          </div>
+          <div class="field narrow">
+            <label class="lbl" for="tmBreak">Paus, min</label>
+            <input type="number" id="tmBreak" min="1" max="60" value="5">
+          </div>
+        </div>
+        <div class="tally">
+          <div class="pips" id="pips"></div>
+          <p id="tallyTxt"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <datalist id="subjList"></datalist>
+  <div class="saveinfo" id="saveinfo">Hämtar ditt schema …</div>
+</div>
+
+<script>
+(() => {
+  const DAYS = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag", "Söndag"];
+  const SHORT = ["Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön"];
+  const MONTHS = ["jan", "feb", "mar", "apr", "maj", "jun", "jul", "aug", "sep", "okt", "nov", "dec"];
+  const LS_KEY = "pluggschema-v1";
+  const $ = (id) => document.getElementById(id);
+
+  let state = blank();
+  function blank() {
+    return { sessions: [], tasks: [], subjects: {}, pomodoros: {}, timer: { work: 25, brk: 5 }, example: false };
+  }
+  function normalize(d) {
+    const b = blank();
+    if (!d || typeof d !== "object") return b;
+    return {
+      sessions: Array.isArray(d.sessions) ? d.sessions : [],
+      tasks: Array.isArray(d.tasks) ? d.tasks : [],
+      subjects: d.subjects && typeof d.subjects === "object" ? d.subjects : {},
+      pomodoros: d.pomodoros && typeof d.pomodoros === "object" ? d.pomodoros : {},
+      timer: { work: +d.timer?.work || b.timer.work, brk: +d.timer?.brk || b.timer.brk },
+      example: !!d.example,
+    };
+  }
+
+  // ---------- datum ----------
+  const pad = (n) => String(n).padStart(2, "0");
+  const iso = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const todayStart = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
+  const dayIdx = (d) => (d.getDay() + 6) % 7; // måndag = 0
+  function isoWeek(date) {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const n = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - n);
+    const y0 = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    return Math.ceil(((d - y0) / 86400000 + 1) / 7);
+  }
+  const mondayOf = (d) => { const m = new Date(d); m.setDate(m.getDate() - dayIdx(m)); m.setHours(0, 0, 0, 0); return m; };
+  const fmtDay = (d) => `${d.getDate()} ${MONTHS[d.getMonth()]}`;
+  const parseISO = (s) => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+  const mins = (t) => { const [h, m] = t.split(":").map(Number); return h * 60 + m; };
+  const fmtDur = (m) => (m >= 60 ? `${Math.floor(m / 60)} h${m % 60 ? " " + (m % 60) + " min" : ""}` : `${m} min`);
+
+  // ---------- ämnesfärger ----------
+  const subjKey = (s) => s.trim().toLowerCase();
+  function colorFor(name) {
+    const k = subjKey(name);
+    if (!k) return "var(--muted)";
+    if (!state.subjects[k]) {
+      const used = Object.values(state.subjects).map((s) => s.c);
+      let c = 1;
+      for (let i = 1; i <= 6; i++) if (!used.includes(i)) { c = i; break; }
+      if (used.length >= 6) c = (used.length % 6) + 1;
+      state.subjects[k] = { name: name.trim(), c };
+    }
+    return `var(--s${state.subjects[k].c})`;
+  }
+
+  // ---------- hjälp ----------
+  function h(tag, attrs = {}, ...kids) {
+    const el = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      if (v == null || v === false) continue;
+      if (k === "class") el.className = v;
+      else if (k === "style") el.setAttribute("style", v);
+      else if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
+      else el.setAttribute(k, v === true ? "" : v);
+    }
+    for (const kid of kids.flat()) if (kid != null && kid !== false) el.append(kid);
+    return el;
+  }
+  const uid = () => Math.random().toString(36).slice(2, 10);
+  function showErr(el, msg) { el.textContent = msg; el.hidden = !msg; }
+
+  // ---------- rubrik ----------
+  function renderTop() {
+    const now = new Date();
+    $("todayline").replaceChildren(
+      h("span", {}, "Vecka ", h("b", {}, String(isoWeek(now)))),
+      h("span", {}, `${DAYS[dayIdx(now)].toLowerCase()} ${fmtDay(now)}`)
+    );
+  }
+
+  // ---------- veckan ----------
+  let pickedDay = dayIdx(new Date());
+  function renderWeek() {
+    const mon = mondayOf(new Date());
+    const tIdx = dayIdx(new Date());
+    $("sDay").replaceChildren(...DAYS.map((d, i) => h("option", { value: i, selected: i === +($("sDay").value || tIdx) }, d)));
+
+    $("daypick").replaceChildren(...SHORT.map((d, i) => {
+      const date = new Date(mon); date.setDate(mon.getDate() + i);
+      return h("button", { type: "button", "aria-pressed": String(i === pickedDay), onclick: () => { pickedDay = i; renderWeek(); } },
+        d, h("small", {}, String(date.getDate())));
+    }));
+
+    $("week").replaceChildren(...DAYS.map((name, i) => {
+      const date = new Date(mon); date.setDate(mon.getDate() + i);
+      const list = state.sessions.filter((s) => s.day === i).sort((a, b) => mins(a.start) - mins(b.start));
+      const total = list.reduce((t, s) => t + Math.max(0, mins(s.end) - mins(s.start)), 0);
+      const cls = ["day", i === tIdx && "is-today", i >= 5 && "is-weekend", i === pickedDay && "is-picked"].filter(Boolean).join(" ");
+      return h("div", { class: cls },
+        h("div", { class: "dayhead" }, h("strong", {}, SHORT[i]), h("span", {}, fmtDay(date))),
+        list.length ? list.map((s) => h("div", { class: "slot", style: `--c:${colorFor(s.subject)}` },
+          h("div", { class: "time" }, `${s.start}–${s.end}`),
+          h("div", { class: "subj" }, h("span", { class: "dot" }), s.subject),
+          h("button", { class: "x", type: "button", "aria-label": `Ta bort ${s.subject} ${SHORT[i]} ${s.start}`, onclick: () => { state.sessions = state.sessions.filter((x) => x.id !== s.id); changed(); } }, "×")
+        )) : h("div", { class: "none" }, "Inget pass"),
+        total ? h("div", { class: "daytotal" }, `Totalt ${fmtDur(total)}`) : null
+      );
+    }));
+  }
+  $("sessForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const subject = $("sSubj").value.trim(), start = $("sStart").value, end = $("sEnd").value, day = +$("sDay").value;
+    if (!subject) return showErr($("sErr"), "Skriv vilket ämne du ska plugga.");
+    if (!start || !end) return showErr($("sErr"), "Fyll i både start- och sluttid.");
+    if (mins(end) <= mins(start)) return showErr($("sErr"), "Sluttiden måste vara efter starttiden.");
+    showErr($("sErr"), "");
+    colorFor(subject);
+    state.sessions.push({ id: uid(), subject, day, start, end });
+    pickedDay = day;
+    $("sSubj").value = "";
+    changed();
+  });
+
+  // ---------- prov och läxor ----------
+  function relDays(n) {
+    if (n === 0) return "idag";
+    if (n === 1) return "imorgon";
+    if (n === -1) return "igår";
+    return n > 0 ? `om ${n} dagar` : `${-n} dagar sen`;
+  }
+  function renderTasks() {
+    const t0 = todayStart();
+    const open = state.tasks.filter((t) => !t.done).sort((a, b) => a.date.localeCompare(b.date));
+    const done = state.tasks.filter((t) => t.done).sort((a, b) => b.date.localeCompare(a.date));
+    $("taskcount").textContent = String(open.length);
+
+    const row = (t) => {
+      const d = parseISO(t.date);
+      const n = Math.round((d - t0) / 86400000);
+      const chipCls = t.done ? "chip ok" : n < 0 ? "chip late" : n <= 2 ? "chip soon" : "chip";
+      const chipTxt = t.done ? "klar" : n < 0 ? `försenad, ${relDays(n)}` : relDays(n);
+      const cb = h("input", { type: "checkbox", id: `cb-${t.id}`, "aria-label": `Klar: ${t.title}`, onchange: (e) => { t.done = e.target.checked; changed(); } });
+      cb.checked = !!t.done;
+      return h("div", { class: `task ${t.done ? "done" : ""} ${t.type === "prov" ? "prov" : ""}` },
+        cb,
+        h("div", {},
+          h("div", { class: "t-title" }, t.title),
+          h("div", { class: "t-meta" },
+            t.subject ? [h("span", { class: "dot", style: `--c:${colorFor(t.subject)}` }), h("span", {}, t.subject)] : null,
+            h("span", { class: "chip type" }, t.type))
+        ),
+        h("div", { class: "t-when" }, `${SHORT[dayIdx(d)].toLowerCase()} ${fmtDay(d)}`, h("br"), h("span", { class: chipCls }, chipTxt)),
+        h("button", { class: "x", type: "button", "aria-label": `Ta bort ${t.title}`, onclick: () => { state.tasks = state.tasks.filter((x) => x.id !== t.id); changed(); } }, "×")
+      );
+    };
+
+    const kids = [];
+    if (!state.tasks.length) kids.push(h("div", { class: "empty" }, "Inga prov eller läxor än. Lägg till det första ovan, så sorteras allt efter datum."));
+    else {
+      const prov = open.filter((t) => t.type === "prov").length;
+      kids.push(h("div", { class: "group-title" }, `Kommande · ${open.length} st${prov ? `, varav ${prov} prov` : ""}`));
+      if (open.length) kids.push(...open.map(row)); else kids.push(h("div", { class: "empty" }, "Allt är klart. Snyggt!"));
+      if (done.length) { kids.push(h("div", { class: "group-title" }, `Klart · ${done.length} st`)); kids.push(...done.map(row)); }
+    }
+    $("tasks").replaceChildren(...kids);
+  }
+  $("taskForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const title = $("tTitle").value.trim(), subject = $("tSubj").value.trim(), type = $("tType").value, date = $("tDate").value;
+    if (!title) return showErr($("tErr"), "Skriv vad det gäller, t.ex. \"Glosförhör kapitel 4\".");
+    if (!date) return showErr($("tErr"), "Välj ett datum.");
+    showErr($("tErr"), "");
+    if (subject) colorFor(subject);
+    state.tasks.push({ id: uid(), title, subject, type, date, done: false });
+    $("tTitle").value = "";
+    changed();
+  });
+
+  // ---------- timer ----------
+  const RING = 2 * Math.PI * 52;
+  $("ring").style.strokeDasharray = RING;
+  const T = { mode: "work", running: false, endsAt: 0, left: 0 };
+  const total = () => (T.mode === "work" ? state.timer.work : state.timer.brk) * 60000;
+  T.left = total();
+  function fmtClock(ms) { const s = Math.ceil(ms / 1000); return `${pad(Math.floor(s / 60))}:${pad(s % 60)}`; }
+  function renderTimer() {
+    const left = T.running ? Math.max(0, T.endsAt - Date.now()) : T.left;
+    const isWork = T.mode === "work";
+    $("timerBox").style.setProperty("--mode", isWork ? "var(--accent)" : "var(--pause)");
+    $("modeLbl").textContent = isWork ? "Plugg" : "Paus";
+    $("clock").textContent = fmtClock(left);
+    $("ring").style.strokeDashoffset = RING * (1 - left / total());
+    $("tStart").textContent = T.running ? "Pausa" : left < total() ? "Fortsätt" : "Starta";
+    $("tSkip").textContent = isWork ? "Hoppa till paus" : "Hoppa till plugg";
+    const subj = $("tmSubj").value.trim();
+    $("timerSubj").textContent = isWork && subj ? subj : isWork ? "" : "Res dig, drick vatten, gå ut en sväng";
+    document.title = T.running ? `${fmtClock(left)} ${isWork ? "Plugg" : "Paus"} · Pluggschema` : "Pluggschema";
+
+    const n = state.pomodoros[iso(new Date())] || 0;
+    $("pips").replaceChildren(...Array.from({ length: Math.min(n, 24) }, () => h("span", { class: "pip" })));
+    $("tallyTxt").replaceChildren(n
+      ? h("span", {}, "Idag: ", h("strong", {}, `${n} pass`), ` · ${fmtDur(n * state.timer.work)} plugg`)
+      : "Inga pass klara idag än. Varje avslutat pluggpass blir en ruta här.");
+  }
+  function switchMode(finished) {
+    if (finished && T.mode === "work") {
+      const k = iso(new Date());
+      state.pomodoros[k] = (state.pomodoros[k] || 0) + 1;
+      changed();
+    }
+    const msg = T.mode === "work" ? `Bra jobbat! Dags för ${state.timer.brk} min paus.` : `Pausen är slut. Dags att plugga i ${state.timer.work} min.`;
+    T.mode = T.mode === "work" ? "brk" : "work";
+    T.running = false; T.left = total();
+    if (finished) { $("ding").textContent = msg; $("ding").hidden = false; }
+    renderTimer();
+  }
+  $("tStart").addEventListener("click", () => {
+    $("ding").hidden = true;
+    if (T.running) { T.left = Math.max(0, T.endsAt - Date.now()); T.running = false; }
+    else { T.endsAt = Date.now() + T.left; T.running = true; }
+    renderTimer();
+  });
+  $("tReset").addEventListener("click", () => { T.running = false; T.mode = "work"; T.left = total(); $("ding").hidden = true; renderTimer(); });
+  $("tSkip").addEventListener("click", () => { $("ding").hidden = true; switchMode(false); });
+  for (const [id, key, max] of [["tmWork", "work", 120], ["tmBreak", "brk", 60]]) {
+    $(id).addEventListener("change", () => {
+      const v = Math.min(max, Math.max(1, Math.round(+$(id).value) || 1));
+      $(id).value = v; state.timer[key] = v;
+      if (!T.running) T.left = total();
+      changed();
+    });
+  }
+  $("tmSubj").addEventListener("input", renderTimer);
+  setInterval(() => {
+    if (!T.running) return;
+    if (Date.now() >= T.endsAt) switchMode(true); else renderTimer();
+  }, 250);
+
+  // ---------- flikar ----------
+  function setTab(name) {
+    document.querySelectorAll(".tab").forEach((t) => t.setAttribute("aria-selected", String(t.dataset.tab === name)));
+    for (const p of ["week", "tasks", "timer"]) $("panel-" + p).hidden = p !== name;
+    try { localStorage.setItem(LS_KEY + "-tab", name); } catch {}
+  }
+  document.querySelectorAll(".tab").forEach((t) => t.addEventListener("click", () => setTab(t.dataset.tab)));
+  try { const t = localStorage.getItem(LS_KEY + "-tab"); if (t) setTab(t); } catch {}
+
+  // ---------- exempel ----------
+  $("clearEx").addEventListener("click", () => { state = { ...blank(), timer: state.timer }; changed(); });
+  $("keepEx").addEventListener("click", () => { state.example = false; changed(); });
+
+  // ---------- rendera ----------
+  function render() {
+    renderTop(); renderWeek(); renderTasks(); renderTimer();
+    $("exbanner").hidden = !state.example;
+    $("tmWork").value = state.timer.work; $("tmBreak").value = state.timer.brk;
+    $("subjList").replaceChildren(...Object.values(state.subjects).map((s) => h("option", { value: s.name })));
+  }
+
+  // ---------- spara ----------
+  let docRef = null, saveTimer = null, saving = false, dirty = false;
+  function changed() {
+    render();
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(save, 500);
+  }
+  async function save() {
+    if (saving) { dirty = true; return; }
+    saving = true;
+    const data = JSON.parse(JSON.stringify(state));
+    try {
+      if (docRef) { await docRef.set(data); $("saveinfo").textContent = "Sparat i ditt konto. Syns på alla dina enheter."; }
+      else { localStorage.setItem(LS_KEY, JSON.stringify(data)); $("saveinfo").textContent = "Sparat i den här webbläsaren."; }
+    } catch (e) {
+      $("saveinfo").textContent = "Kunde inte spara just nu. Ändringen sparas när anslutningen är tillbaka.";
+    }
+    saving = false;
+    if (dirty) { dirty = false; save(); }
+  }
+  function loadLocal() {
+    try { const raw = localStorage.getItem(LS_KEY); if (raw) state = normalize(JSON.parse(raw)); } catch {}
+    $("saveinfo").textContent = "Sparas i den här webbläsaren.";
+    render();
+  }
+
+  render();
+  (async () => {
+    const [db, user] = await Promise.all([window.claude?.use?.("db"), window.claude?.use?.("user")]).catch(() => [null, null]);
+    const id = user ? await user.id().catch(() => null) : null;
+    if (!db || !id) return loadLocal();
+    docRef = db.doc(`data/users/${id}/pluggschema`);
+    let first = true;
+    docRef.onSnapshot((snap) => {
+      if (snap.metadata.hasPendingWrites || saving) return;
+      if (snap.exists) state = normalize(snap.data());
+      else if (first) {
+        // Inget i kontot än: ta med det som eventuellt finns lokalt.
+        try { const raw = localStorage.getItem(LS_KEY); if (raw) { state = normalize(JSON.parse(raw)); save(); } } catch {}
+      }
+      first = false;
+      $("saveinfo").textContent = "Sparas i ditt konto. Syns på alla dina enheter.";
+      render();
+    }, () => { docRef = null; loadLocal(); });
+  })();
+})();
+</script>
